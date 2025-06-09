@@ -1,0 +1,16 @@
+// meu-app-grpc/protos/video_service.proto
+syntax = "proto3";
+package video;
+
+service VideoService {
+  // streaming back-to-back
+  rpc ProcessVideo(stream VideoRequest) returns (stream VideoResponse);
+}
+
+message VideoRequest {
+  bytes chunk_data = 1;
+}
+
+message VideoResponse {
+  bytes chunk_data = 1;
+}
