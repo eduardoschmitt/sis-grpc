@@ -30,7 +30,7 @@ class VideoServiceServicer(video_service_pb2_grpc.VideoServiceServicer):
                 for req in request_iterator:
                     f_orig.write(req.chunk_data)
 
-            clip = VideoFileClip(orig_path)
+                clip = VideoFileClip(orig_path)
             audio = clip.audio
             if audio:
                 audio_fd, audio_path = tempfile.mkstemp(suffix=".mp3")

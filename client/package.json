@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gen:proto": "protoc -I protos protos/video_service.proto --plugin=\"protoc-gen-ts_proto=C:\\Users\\DELL\\Documents\\Sistema-Distribu-do-de-Transfer-ncia-de-Arquivos-via-gRPC\\client\\node_modules\\.bin\\protoc-gen-ts_proto.cmd\" --ts_proto_out=src/protos --ts_proto_opt=outputServices=grpc-js,env=node"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.13.4",
@@ -16,6 +17,7 @@
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.6",
+    "protoc-gen-ts": "^0.8.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -26,6 +28,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "tailwindcss": "^4",
+    "ts-proto": "^2.7.3",
     "typescript": "^5"
   }
 }

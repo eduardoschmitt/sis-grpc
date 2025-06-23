@@ -2,6 +2,7 @@ import { IncomingForm, File as FormidableFile } from "formidable";
 import fs from "fs";
 import type { NextApiRequest, NextApiResponse } from "next";
 import client from "../../services/grpcClient";
+import { VideoRequest, VideoResponse } from "../../pb/video_service";
 
 export const config = { api: { bodyParser: false } };
 const CHUNK_SIZE = 1024 * 64;
@@ -26,17 +27,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const videoStream = fs.createReadStream(file.filepath, { highWaterMark: CHUNK_SIZE });
-  const call = client.ProcessVideo();
+  const call = client.processVideo();
 
   await new Promise<void>((resolve, reject) => {
     const respBuffers: Buffer[] = [];
 
-    call.on("data", (msg: any) => {
-      respBuffers.push(msg.chunk_data);
+    call.on("data", (msg: VideoResponse) => {
+      respBuffers.push(msg.chunkData);
     });
 
-    call.on("error", (err: any) => {
-      console.error("Erro no call gRPC:", err);
+    call.on("error", err => {
       if (!res.headersSent) res.status(500).json({ error: err.message });
       reject(err);
     });
@@ -49,13 +49,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       resolve();
     });
 
+    // Envia chunks tipados
     videoStream.on("data", chunk => {
-      const bufferChunk = typeof chunk === "string" ? Buffer.from(chunk) : chunk;
-      call.write({ chunk_data: bufferChunk });
+      call.write({ chunkData: chunk } as VideoRequest);
     });
-
-    videoStream.on("error", (e) => {
-      console.error("Erro ao ler vídeo:", e);
+    videoStream.on("error", e => {
       if (!res.headersSent) res.status(500).json({ error: e.message });
       call.end();
       reject(e);
